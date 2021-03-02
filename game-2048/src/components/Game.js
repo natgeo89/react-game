@@ -6,15 +6,14 @@ import '../style/style.css';
 
 export default function Game() {
   const gameSize = 4;
-  const cellsCount = gameSize**2;
+  const cellsCount = gameSize ** 2;
   const template = Array(cellsCount).fill({value: null});
 
-  const initArray = getCellsWithNewRandomValue(template);
+  const initArray = getCellsWithNewRandomNumber(template);
   
   const [cells, setCells] = useState(initArray);
 
   function handleKeyUp({key}) {
-
     let newCells;
 
     switch (key) {
@@ -32,19 +31,28 @@ export default function Game() {
         break;
       default: 
         document.addEventListener('keyup', handleKeyUp, {once: true});
-        break;
+        return;
     }
 
-    setCells(getCellsWithNewRandomValue(newCells));    
+    const cellsWithNewNumber = getCellsWithNewRandomNumber(newCells);
+
+    setCells(cellsWithNewNumber);
   }
 
 
-  function getCellsWithNewRandomValue(cells) {
+  function getCellsWithNewRandomNumber(cells) {
     const cellsCopy = [...cells];
     const randomIndex = getRandomEmptyIndexFrom(cellsCopy);
     const randomValue = Math.random() < 0.5 ? 2 : 4;
 
-    return cellsCopy.map(({value}, ind) => ({value: randomIndex === ind ? randomValue : value}));
+    return cellsCopy.map(({value, isMerged}, ind) => {
+      const val = randomIndex === ind ? randomValue : value;
+      const isNew = randomIndex === ind ? true : false;
+      return {
+        value: val,
+        isNew: isNew,
+        isMerged: isMerged,
+      }});
   }
 
   function getRandomEmptyIndexFrom(array) {
@@ -67,9 +75,9 @@ export default function Game() {
 
   return (
     <div className='game-field'>
-        {cells.map(({value}, index) => {
+        {cells.map(({value, isNew, isMerged}, index) => {
           return (
-            <Cell key={index} value={value}/>
+            <Cell key={index} value={value} isNew={isNew} isMerged={isMerged}/>
           )
         })}
     </div>

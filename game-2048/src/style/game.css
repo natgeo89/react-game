@@ -60,6 +60,28 @@
   background-color: var(--color-512);
 }
 
+.new-number {
+  animation: newNumber 0.4s;
+}
+
 .merged {
-  background-color: green;
+  animation: merge 0.6s;
+}
+
+@keyframes newNumber {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes merge {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
 }

@@ -3,10 +3,12 @@ import React from 'react';
 // import '../style/game.css';
 
 export default function Cell(props) {
-  const {value} = props;
-
+  const {value, isNew, isMerged} = props;
+  const cellClass = value ? `cell-${value}` : '';
+  const newNumber = isNew ? `new-number` : '';
+  const merged = isMerged ? `merged` : '';
   return (
-    <div className={`cell cell-${value}`}>{value}
+    <div className={`cell ${cellClass} ${newNumber} ${merged}`}>{value}
     </div>
   )
 }

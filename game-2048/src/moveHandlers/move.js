@@ -29,7 +29,7 @@ function move(cells) {
     }
   }, [])
 
-  return cellsMoved.map(({value}) => ({value: value}));
+  return cellsMoved;
 }
 
 function createMatrixFromArray(array) {
