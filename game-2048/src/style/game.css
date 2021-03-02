@@ -1,0 +1,65 @@
+.game-field {
+  margin: 0 auto;
+  display: flex;
+  padding: 15px;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 500px;
+  background-color: var(--color-border);
+  box-sizing: border-box;
+}
+
+.cell {
+  width: 106.25px;
+  height: 106.25px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--color-empty);
+  font-size: 4rem;
+  font-weight: bold;
+
+  border-radius: 5px;
+}
+
+.cell-2 {
+  background-color: var(--color-2);
+}
+
+.cell-4 {
+  background-color: var(--color-4);
+}
+
+.cell-8 {
+  background-color: var(--color-8);
+}
+
+.cell-16 {
+  background-color: var(--color-16);
+}
+
+.cell-32 {
+  background-color: var(--color-32);
+}
+
+.cell-64 {
+  background-color: var(--color-64);
+}
+
+.cell-128 {
+  background-color: var(--color-128);
+}
+
+.cell-256 {
+  background-color: var(--color-256);
+}
+
+.cell-512 {
+  background-color: var(--color-512);
+}
+
+.merged {
+  background-color: green;
+}

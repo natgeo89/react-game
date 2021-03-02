@@ -1,0 +1,21 @@
+:root {
+  --color-empty: rgba(238,228,218,.35);
+  --color-border: #bbada0;
+  --color-2: #eee4da;
+  --color-4: #ede0c8;
+  --color-8: #f2b179;
+  --color-16: #f59563;
+  --color-32: #f67c5f;
+  --color-64: #f65e3b;
+  --color-128: #edcf72;
+  --color-256: #edcc61;
+  --color-512: #edc850;
+
+  font-family: monospace;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
