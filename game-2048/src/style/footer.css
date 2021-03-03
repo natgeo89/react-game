@@ -1,0 +1,22 @@
+/* sticky footer: https://css-tricks.com/couple-takes-sticky-footer/ */
+
+.footer {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  padding: 10px 0;
+  background-color: chocolate;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.footer-link {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+  margin: 0 5px;
+}
+
+.footer-image {
+  width: 70px;
+}

@@ -1,3 +1,29 @@
-.game-name {
+.title-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-title {
   font-size: 10rem;
+  font-weight: 900;
+}
+
+.info-subtitle {
+  font-size: 1.5rem;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn {
+  font-weight: bold;
+  background-color: var(--color-border);
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
 }

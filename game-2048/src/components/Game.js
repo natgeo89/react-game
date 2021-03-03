@@ -1,21 +1,23 @@
-import React, {useState, useEffect} from 'react';
-import {moveUp, moveLeft, moveDown, moveRight} from '../moveHandlers/move';
+import React, { useState, useEffect } from 'react';
+import { moveUp, moveLeft, moveDown, moveRight } from '../moveHandlers/move';
 
 import Cell from './Cell';
+import Info from './Info';
+import Footer from './Footer';
 import '../style/style.css';
 
 export default function Game() {
   const gameSize = 4;
   const cellsCount = gameSize ** 2;
-  const template = Array(cellsCount).fill({value: null});
+  const template = Array(cellsCount).fill({ value: null });
 
   const initArray = getCellsWithNewRandomNumber(template);
   const savedArray = getSavedGameArray();
 
   const [cells, setCells] = useState(savedArray || initArray);
-  
 
-  function handleKeyUp({key}) {
+
+  function handleKeyUp({ key }) {
     let newCells;
 
     switch (key) {
@@ -31,13 +33,13 @@ export default function Game() {
       case 'ArrowRight':
         newCells = moveRight(cells);
         break;
-      default: 
-        document.addEventListener('keyup', handleKeyUp, {once: true});
+      default:
+        document.addEventListener('keyup', handleKeyUp, { once: true });
         return;
     }
 
-    if(!isCellsMoved(newCells)) {
-      document.addEventListener('keyup', handleKeyUp, {once: true});
+    if (!isCellsMoved(newCells)) {
+      document.addEventListener('keyup', handleKeyUp, { once: true });
       return;
     }
 
@@ -47,8 +49,8 @@ export default function Game() {
   }
 
   function isCellsMoved(array) {
-    const movedArray = [...array].map(({value}) => value);
-    const copyCells = [...cells].map(({value}) => value);
+    const movedArray = [...array].map(({ value }) => value);
+    const copyCells = [...cells].map(({ value }) => value);
     return JSON.stringify(movedArray) !== JSON.stringify(copyCells);
   }
 
@@ -68,18 +70,19 @@ export default function Game() {
     const randomIndex = getRandomEmptyIndexFrom(cellsCopy);
     const randomValue = Math.random() < 0.5 ? 2 : 4;
 
-    return cellsCopy.map(({value, isMerged}, ind) => {
+    return cellsCopy.map(({ value, isMerged }, ind) => {
       const val = randomIndex === ind ? randomValue : value;
       const isNew = randomIndex === ind ? true : false;
       return {
         value: val,
         isNew: isNew,
         isMerged: isMerged,
-      }});
+      }
+    });
   }
 
   function getRandomEmptyIndexFrom(array) {
-    const emptyIndexes = [...array].reduce((accum, {value}, index) => {
+    const emptyIndexes = [...array].reduce((accum, { value }, index) => {
       if (value === null) {
         return [...accum, index]
       } else {
@@ -93,17 +96,23 @@ export default function Game() {
   }
 
   useEffect(() => {
-    document.addEventListener('keyup', handleKeyUp, {once: true});
+    document.addEventListener('keyup', handleKeyUp, { once: true });
     saveGameArrayInLS(cells);
   })
 
   return (
-    <div className='game-field'>
-        {cells.map(({value, isNew, isMerged}, index) => {
-          return (
-            <Cell key={index} value={value} isNew={isNew} isMerged={isMerged}/>
-          )
-        })}
+    <div className='wrapper'>
+      <div className='game-container'>
+        <Info />
+        <div className='game-field'>
+          {cells.map(({ value, isNew, isMerged }, index) => {
+            return (
+              <Cell key={index} value={value} isNew={isNew} isMerged={isMerged} />
+            )
+          })}
+        </div>
+      </div>
+      <Footer />
     </div>
   )
 }
