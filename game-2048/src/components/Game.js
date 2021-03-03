@@ -7,17 +7,21 @@ import Footer from './Footer';
 import '../style/style.css';
 
 export default function Game() {
-  const gameSize = 4;
-  const cellsCount = gameSize ** 2;
-  const template = Array(cellsCount).fill({ value: null });
+
+  const template = createTemplateArray();
 
   const initArray = getCellsWithNewRandomNumber(template);
   const savedArray = getSavedGameArray();
 
   const [cells, setCells] = useState(savedArray || initArray);
 
+  const savedScore = getSavedScore(); 
+  const [score, setScore] = useState(savedScore || 0);
+
 
   function handleKeyUp({ key }) {
+
+    console.log(key);
     let newCells;
 
     switch (key) {
@@ -39,13 +43,33 @@ export default function Game() {
     }
 
     if (!isCellsMoved(newCells)) {
-      document.addEventListener('keyup', handleKeyUp, { once: true });
+      // document.addEventListener('keyup', handleKeyUp, { once: true });
       return;
     }
 
+    const scorePerMove = calcScorePerMove(newCells);
+
+
+    setScore(score + scorePerMove);
+
     const cellsWithNewNumber = getCellsWithNewRandomNumber(newCells);
 
+
     setCells(cellsWithNewNumber);
+  }
+
+  function createTemplateArray() {
+    const gameSize = 4;
+    const cellsCount = gameSize ** 2;
+    return Array(cellsCount).fill({ value: null });
+  }
+
+  function createNewGame() {
+    document.removeEventListener('keyup', handleKeyUp);
+    const template = createTemplateArray();
+    const initArray = getCellsWithNewRandomNumber(template);
+    setCells(initArray);
+    setScore(0);
   }
 
   function isCellsMoved(array) {
@@ -62,6 +86,14 @@ export default function Game() {
   function saveGameArrayInLS(array) {
     const arrForSave = [...array].map(({ value, isNew }) => ({ value: value, isNew: isNew }));
     localStorage.setItem('current-game', JSON.stringify(arrForSave));
+  }
+
+  function getSavedScore() {
+    return +localStorage.getItem('current-score');
+  }
+  
+  function saveScoreInLS(score) {
+    localStorage.setItem('current-score', score);
   }
 
 
@@ -95,15 +127,20 @@ export default function Game() {
     return emptyIndexes[randomIndex];
   }
 
+  function calcScorePerMove(cells) {
+    return [...cells].reduce((accum, {value, isMerged}) => isMerged ? accum + value : accum, 0);
+  }
+
   useEffect(() => {
-    document.addEventListener('keyup', handleKeyUp, { once: true });
+    document.addEventListener('keyup', handleKeyUp, {once: true});
     saveGameArrayInLS(cells);
+    saveScoreInLS(score);
   })
 
   return (
     <div className='wrapper'>
       <div className='game-container'>
-        <Info />
+        <Info newGame={createNewGame} score={score}/>
         <div className='game-field'>
           {cells.map(({ value, isNew, isMerged }, index) => {
             return (
