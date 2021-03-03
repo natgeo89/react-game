@@ -4,6 +4,7 @@ export default function Info(props) {
   const { score, newGame } = props;
 
   function handleClick() {
+    console.log(props)
     newGame();
   }
 

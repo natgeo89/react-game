@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { moveUp, moveLeft, moveDown, moveRight } from '../moveHandlers/move';
 
 import Cell from './Cell';
@@ -6,23 +6,27 @@ import Info from './Info';
 import Footer from './Footer';
 import '../style/style.css';
 
-export default function Game() {
+export default class Game extends React.Component {
 
-  const template = createTemplateArray();
+  constructor(props){
+    super(props)
+    const template = this.createTemplateArray();  
+    const initArray = this.getCellsWithNewRandomNumber(template);
+    const savedArray = this.getSavedGameArray();
+  
+    const savedScore = this.getSavedScore();
 
-  const initArray = getCellsWithNewRandomNumber(template);
-  const savedArray = getSavedGameArray();
+    this.state = {
+      cells: savedArray || initArray,
+      score: savedScore || 0,
+    }
+  }
 
-  const [cells, setCells] = useState(savedArray || initArray);
+  handleKeyUp = ({ key }) => {
 
-  const savedScore = getSavedScore(); 
-  const [score, setScore] = useState(savedScore || 0);
-
-
-  function handleKeyUp({ key }) {
-
-    console.log(key);
     let newCells;
+
+    const {cells, score} = this.state;
 
     switch (key) {
       case 'ArrowUp':
@@ -38,68 +42,77 @@ export default function Game() {
         newCells = moveRight(cells);
         break;
       default:
-        document.addEventListener('keyup', handleKeyUp, { once: true });
         return;
     }
 
-    if (!isCellsMoved(newCells)) {
-      // document.addEventListener('keyup', handleKeyUp, { once: true });
+
+    if (!this.isCellsMoved(newCells)) {
       return;
     }
 
-    const scorePerMove = calcScorePerMove(newCells);
+    const scorePerMove = this.calcScorePerMove(newCells);
+    
+    if (scorePerMove !== 0) {
+      const newScore = score + scorePerMove;
+      this.saveScoreInLS(newScore);
+      this.setState({
+        score: newScore,
+      });
+    }
 
+    const cellsWithNewNumber = this.getCellsWithNewRandomNumber(newCells);
 
-    setScore(score + scorePerMove);
-
-    const cellsWithNewNumber = getCellsWithNewRandomNumber(newCells);
-
-
-    setCells(cellsWithNewNumber);
+    this.saveGameArrayInLS(cellsWithNewNumber);
+    this.setState({
+      cells: cellsWithNewNumber,
+    });
   }
 
-  function createTemplateArray() {
+  createTemplateArray = () => {
     const gameSize = 4;
     const cellsCount = gameSize ** 2;
     return Array(cellsCount).fill({ value: null });
   }
 
-  function createNewGame() {
-    document.removeEventListener('keyup', handleKeyUp);
-    const template = createTemplateArray();
-    const initArray = getCellsWithNewRandomNumber(template);
-    setCells(initArray);
-    setScore(0);
+  createNewGame = () => {
+    const template = this.createTemplateArray();
+    const initArray = this.getCellsWithNewRandomNumber(template);
+    this.saveScoreInLS(0);
+    this.saveGameArrayInLS(initArray);
+    this.setState({
+      score: 0,
+      cells: initArray,
+    });
   }
 
-  function isCellsMoved(array) {
+  isCellsMoved = (array) => {
     const movedArray = [...array].map(({ value }) => value);
-    const copyCells = [...cells].map(({ value }) => value);
+    const copyCells = [...this.state.cells].map(({ value }) => value);
     return JSON.stringify(movedArray) !== JSON.stringify(copyCells);
   }
 
-  function getSavedGameArray() {
+  getSavedGameArray = () => {
     const arr = localStorage.getItem('current-game');
     return JSON.parse(arr);
   }
 
-  function saveGameArrayInLS(array) {
+  saveGameArrayInLS = (array) => {
     const arrForSave = [...array].map(({ value, isNew }) => ({ value: value, isNew: isNew }));
     localStorage.setItem('current-game', JSON.stringify(arrForSave));
   }
 
-  function getSavedScore() {
+  getSavedScore = () => {
     return +localStorage.getItem('current-score');
   }
   
-  function saveScoreInLS(score) {
+  saveScoreInLS = (score) => {
     localStorage.setItem('current-score', score);
   }
 
 
-  function getCellsWithNewRandomNumber(cells) {
+  getCellsWithNewRandomNumber = (cells) => {
     const cellsCopy = [...cells];
-    const randomIndex = getRandomEmptyIndexFrom(cellsCopy);
+    const randomIndex = this.getRandomEmptyIndexFrom(cellsCopy);
     const randomValue = Math.random() < 0.5 ? 2 : 4;
 
     return cellsCopy.map(({ value, isMerged }, ind) => {
@@ -113,7 +126,7 @@ export default function Game() {
     });
   }
 
-  function getRandomEmptyIndexFrom(array) {
+  getRandomEmptyIndexFrom = (array) => {
     const emptyIndexes = [...array].reduce((accum, { value }, index) => {
       if (value === null) {
         return [...accum, index]
@@ -127,29 +140,33 @@ export default function Game() {
     return emptyIndexes[randomIndex];
   }
 
-  function calcScorePerMove(cells) {
+  calcScorePerMove = (cells) => {
     return [...cells].reduce((accum, {value, isMerged}) => isMerged ? accum + value : accum, 0);
   }
 
-  useEffect(() => {
-    document.addEventListener('keyup', handleKeyUp, {once: true});
-    saveGameArrayInLS(cells);
-    saveScoreInLS(score);
-  })
+  componentDidMount() {
+    document.addEventListener('keyup', this.handleKeyUp);
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener('keyup', this.handleKeyUp);
+  }
 
-  return (
-    <div className='wrapper'>
-      <div className='game-container'>
-        <Info newGame={createNewGame} score={score}/>
-        <div className='game-field'>
-          {cells.map(({ value, isNew, isMerged }, index) => {
-            return (
-              <Cell key={index} value={value} isNew={isNew} isMerged={isMerged} />
-            )
-          })}
+  render() {
+    return (
+      <div className='wrapper'>
+        <div className='game-container'>
+          <Info newGame={this.createNewGame} score={this.state.score}/>
+          <div className='game-field'>
+            {this.state.cells.map(({ value, isNew, isMerged }, index) => {
+              return (
+                <Cell key={index} value={value} isNew={isNew} isMerged={isMerged} />
+              )
+            })}
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  )
+    )
+  }
 }
