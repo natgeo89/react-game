@@ -1,6 +1,4 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
-// import '../style/game.css';
 
 export default function Cell(props) {
   const {value, isNew, isMerged} = props;
@@ -8,7 +6,10 @@ export default function Cell(props) {
   const newNumber = isNew ? `new-number` : '';
   const merged = isMerged ? `merged` : '';
   return (
-    <div className={`cell ${cellClass} ${newNumber} ${merged}`}>{value}
+    <div
+      className={`cell ${cellClass} ${newNumber} ${merged}`}
+    >
+      {value}
     </div>
   )
 }

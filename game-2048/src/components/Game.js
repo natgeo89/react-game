@@ -10,8 +10,10 @@ export default function Game() {
   const template = Array(cellsCount).fill({value: null});
 
   const initArray = getCellsWithNewRandomNumber(template);
+  const savedArray = getSavedGameArray();
+
+  const [cells, setCells] = useState(savedArray || initArray);
   
-  const [cells, setCells] = useState(initArray);
 
   function handleKeyUp({key}) {
     let newCells;
@@ -34,9 +36,30 @@ export default function Game() {
         return;
     }
 
+    if(!isCellsMoved(newCells)) {
+      document.addEventListener('keyup', handleKeyUp, {once: true});
+      return;
+    }
+
     const cellsWithNewNumber = getCellsWithNewRandomNumber(newCells);
 
     setCells(cellsWithNewNumber);
+  }
+
+  function isCellsMoved(array) {
+    const movedArray = [...array].map(({value}) => value);
+    const copyCells = [...cells].map(({value}) => value);
+    return JSON.stringify(movedArray) !== JSON.stringify(copyCells);
+  }
+
+  function getSavedGameArray() {
+    const arr = localStorage.getItem('current-game');
+    return JSON.parse(arr);
+  }
+
+  function saveGameArrayInLS(array) {
+    const arrForSave = [...array].map(({ value, isNew }) => ({ value: value, isNew: isNew }));
+    localStorage.setItem('current-game', JSON.stringify(arrForSave));
   }
 
 
@@ -71,6 +94,7 @@ export default function Game() {
 
   useEffect(() => {
     document.addEventListener('keyup', handleKeyUp, {once: true});
+    saveGameArrayInLS(cells);
   })
 
   return (

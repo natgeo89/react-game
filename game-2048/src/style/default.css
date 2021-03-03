@@ -10,9 +10,11 @@
   --color-128: #edcf72;
   --color-256: #edcc61;
   --color-512: #edc850;
+  --color-1024: #81713c;
+  --color-2048: #72c244;
 
   font-family: monospace;
-
+  font-size: 10px;
 }
 
 * {
